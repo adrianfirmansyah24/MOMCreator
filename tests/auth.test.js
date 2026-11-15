@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {validateLogin,readSession,writeSession,clearSession,SESSION_KEY,DEMO_ACCOUNTS} from '../js/auth.js';
+test('validasi kolom dan kredensial akun contoh',()=>{assert.deepEqual(Object.keys(validateLogin('','').errors),['email','password']);assert.ok(validateLogin('bukan-email','x').errors.email);assert.ok(validateLogin('ayu@mom.test','salah').errors.password);for(const a of DEMO_ACCOUNTS)assert.deepEqual(validateLogin(a.email,a.password),{user:a.name});assert.equal(validateLogin(' AYU@MOM.TEST ','MomDemo2026!').user,'Ayu');});
+test('sesi hanya menyimpan identitas demo, tanpa kata sandi',()=>{const storage={setItem(k,v){this[k]=v;},getItem(k){return this[k];},removeItem(k){delete this[k];}};assert.equal(writeSession(storage,'Ayu'),true);assert.deepEqual(readSession(storage),{version:1,user:'Ayu'});assert.equal(storage[SESSION_KEY].includes('password'),false);clearSession(storage);assert.equal(readSession(storage),null);});
+test('identitas tidak valid, JSON rusak, dan storage diblokir aman',()=>{assert.equal(readSession({getItem:()=>'{rusak'}),null);assert.equal(readSession({getItem:()=>JSON.stringify({version:1,user:'Rani'})}),null);assert.equal(writeSession(null,'Ayu'),false);assert.equal(writeSession(null,'Orang lain'),false);assert.doesNotThrow(()=>clearSession(null));});

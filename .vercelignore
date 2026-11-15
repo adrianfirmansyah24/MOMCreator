@@ -1,0 +1,6 @@
+tests/
+node_modules/
+.git/
+BRIEF_CODEX_MOM_CREATOR.md
+mom-creator-vercel.zip
+style.css

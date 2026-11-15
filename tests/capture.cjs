@@ -1,0 +1,3 @@
+const {loginAs}=require('./session.cjs');
+const {chromium,chromeOptions}=require('./browser-runtime.cjs');
+(async()=>{const b=await chromium.launch(chromeOptions);const p=await b.newPage();await p.goto('http://127.0.0.1:8000/#/rapat');await loginAs(p);await p.locator('#toast').evaluate(e=>e.textContent='');await p.getByRole('heading',{name:'Rapat',exact:true}).waitFor();for(const [width,name]of [[1440,'desktop'],[768,'tablet'],[375,'mobile']]){await p.setViewportSize({width,height:950});await p.screenshot({path:`tests/${name}.png`,fullPage:true});}await b.close();console.log('Screenshot data awal tersimpan.');})().catch(e=>{console.error(e);process.exit(1)});
